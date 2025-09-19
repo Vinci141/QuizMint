@@ -85,6 +85,7 @@ const App: React.FC = () => {
   const handleTopicChange = () => {
     setTopic(null);
     setQuestions([]);
+    setDifficulty(Difficulty.Beginner); // Reset difficulty for the next topic
   };
 
   if (!topic) {
