@@ -1,0 +1,5 @@
+{
+  "name": "Quiz Genius",
+  "description": "An intelligent quiz application that generates questions on any programming language or computer science concept, adapting from beginner to advanced levels to enhance your learning journey.",
+  "requestFramePermissions": []
+}
