@@ -38,6 +38,7 @@ export const generateQuizQuestions = async (topic: string, difficulty: Difficult
     const prompt = `
       You are an expert educator and quiz creator specializing in computer science and programming.
       Generate 5 multiple-choice quiz questions on the topic of "${topic}".
+      The quiz, including questions, options, and explanations, must be in English.
       The questions should be at a "${difficulty}" level.
       Each question must have exactly 4 options.
       One option must be correct.
