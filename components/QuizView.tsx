@@ -15,6 +15,7 @@ interface QuizViewProps {
   score: number;
   isQuizFinished: boolean;
   onRestart: () => void;
+  onTopicChange: () => void;
 }
 
 const QuizView: React.FC<QuizViewProps> = ({
@@ -29,6 +30,7 @@ const QuizView: React.FC<QuizViewProps> = ({
   score,
   isQuizFinished,
   onRestart,
+  onTopicChange,
 }) => {
   if (isLoading) {
     return <div className="flex items-center justify-center h-full"><Loader text="Generating fresh questions..." /></div>;
@@ -54,17 +56,25 @@ const QuizView: React.FC<QuizViewProps> = ({
     return (
       <div className="flex flex-col items-center justify-center h-full text-center bg-slate-800 p-8 rounded-lg shadow-xl">
         <h2 className="text-3xl font-bold text-sky-400 mb-2">Quiz Completed!</h2>
-        <p className="text-slate-300 text-lg mb-6">You've mastered this level.</p>
+        <p className="text-slate-300 text-lg mb-6">Great work!</p>
         <div className="text-5xl font-bold text-white mb-2">
           {score} / {questions.length}
         </div>
         <p className="text-slate-400 mb-8">Correct Answers</p>
-        <button
-          onClick={onRestart}
-          className="px-8 py-3 bg-sky-600 text-white font-bold rounded-lg hover:bg-sky-500 transition-colors shadow-lg"
-        >
-          Restart Quiz
-        </button>
+        <div className="flex flex-col sm:flex-row gap-4 mt-2">
+          <button
+            onClick={onRestart}
+            className="px-8 py-3 bg-sky-600 text-white font-bold rounded-lg hover:bg-sky-500 transition-colors shadow-lg"
+          >
+            Play Again
+          </button>
+          <button
+            onClick={onTopicChange}
+            className="px-8 py-3 bg-slate-600 text-white font-bold rounded-lg hover:bg-slate-500 transition-colors shadow-lg"
+          >
+            New Topic
+          </button>
+        </div>
       </div>
     );
   }
@@ -91,7 +101,7 @@ const QuizView: React.FC<QuizViewProps> = ({
         <p className="text-sm text-slate-400 font-medium">
           Question {currentQuestionIndex + 1} of {questions.length}
         </p>
-        <p className="text-sm text-slate-400 font-medium">Score: {score}</p>
+        <p className="text-sm text-slate-400 font-medium">Score: <span className="font-bold text-sky-400">{score}</span></p>
       </div>
 
       <h2 className="text-2xl sm:text-3xl font-bold text-slate-100 leading-tight mb-8">

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import TopicInput from './components/TopicInput';
 import Sidebar from './components/Sidebar';
@@ -120,6 +119,7 @@ const App: React.FC = () => {
             score={score}
             isQuizFinished={isQuizFinished}
             onRestart={resetQuiz}
+            onTopicChange={handleTopicChange}
           />
         </main>
       </div>
