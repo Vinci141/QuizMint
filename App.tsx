@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import TopicInput from './components/TopicInput';
 import Sidebar from './components/Sidebar';
 import QuizView from './components/QuizView';
@@ -16,10 +16,11 @@ const App: React.FC = () => {
   const [score, setScore] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [askedQuestions, setAskedQuestions] = useState<QuizQuestion[]>([]);
   
   const isQuizFinished = !isLoading && isAnswered && currentQuestionIndex === questions.length - 1;
 
-  const fetchQuestions = useCallback(async (currentTopic: string, currentDifficulty: Difficulty) => {
+  const fetchNewQuestions = async (currentTopic: string, currentDifficulty: Difficulty, existingQuestions: QuizQuestion[]) => {
     if (!currentTopic) return;
     setIsLoading(true);
     setError(null);
@@ -29,8 +30,9 @@ const App: React.FC = () => {
     setIsAnswered(false);
     setScore(0);
     try {
-      const fetchedQuestions = await generateQuizQuestions(currentTopic, currentDifficulty);
+      const fetchedQuestions = await generateQuizQuestions(currentTopic, currentDifficulty, existingQuestions);
       setQuestions(fetchedQuestions);
+      setAskedQuestions(prev => [...prev, ...fetchedQuestions]);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -40,22 +42,19 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
-
-  useEffect(() => {
-    if (topic) {
-      fetchQuestions(topic, difficulty);
-    }
-  }, [topic, difficulty, fetchQuestions]);
+  };
 
   const handleTopicSubmit = (newTopic: string) => {
     setTopic(newTopic);
     setDifficulty(Difficulty.Beginner);
+    setAskedQuestions([]);
+    fetchNewQuestions(newTopic, Difficulty.Beginner, []);
   };
 
   const handleDifficultyChange = (newDifficulty: Difficulty) => {
-    if (newDifficulty !== difficulty) {
+    if (newDifficulty !== difficulty && topic) {
       setDifficulty(newDifficulty);
+      fetchNewQuestions(topic, newDifficulty, askedQuestions);
     }
   };
 
@@ -78,14 +77,15 @@ const App: React.FC = () => {
   
   const resetQuiz = () => {
       if(topic){
-          fetchQuestions(topic, difficulty);
+          fetchNewQuestions(topic, difficulty, askedQuestions);
       }
   };
 
   const handleTopicChange = () => {
     setTopic(null);
     setQuestions([]);
-    setDifficulty(Difficulty.Beginner); // Reset difficulty for the next topic
+    setDifficulty(Difficulty.Beginner);
+    setAskedQuestions([]);
   };
 
   if (!topic) {

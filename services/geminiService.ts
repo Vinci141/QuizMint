@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { Difficulty, QuizQuestion } from "../types";
 
@@ -33,9 +32,9 @@ const QUIZ_SCHEMA = {
   },
 };
 
-export const generateQuizQuestions = async (topic: string, difficulty: Difficulty): Promise<QuizQuestion[]> => {
+export const generateQuizQuestions = async (topic: string, difficulty: Difficulty, existingQuestions: QuizQuestion[] = []): Promise<QuizQuestion[]> => {
   try {
-    const prompt = `
+    let prompt = `
       You are an expert educator and quiz creator specializing in computer science and programming.
       Generate 5 multiple-choice quiz questions on the topic of "${topic}".
       The quiz, including questions, options, and explanations, must be in English.
@@ -44,8 +43,14 @@ export const generateQuizQuestions = async (topic: string, difficulty: Difficult
       One option must be correct.
       Provide a brief explanation for why the correct answer is right.
       Ensure the 'correctAnswerIndex' is a number between 0 and 3.
-      Return the data in a valid JSON array format according to the provided schema. Do not include any markdown formatting like \`\`\`json.
     `;
+    
+    if (existingQuestions.length > 0) {
+      const existingQuestionTexts = existingQuestions.map(q => `- "${q.question}"`).join('\n');
+      prompt += `\n\nIMPORTANT: To ensure variety, please do not generate questions that are the same as or substantively similar to any of the following questions that have already been asked in this session:\n${existingQuestionTexts}`;
+    }
+
+    prompt += `\n\nReturn the data in a valid JSON array format according to the provided schema. Do not include any markdown formatting like \`\`\`json.`;
     
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
